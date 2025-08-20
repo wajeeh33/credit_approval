@@ -124,14 +124,14 @@
         <h2 class="text-2xl font-bold mb-4">🎉 Congratulations! Credit Approved!</h2>
         <div class="my-6">
           <h3 class="text-xl font-semibold">Approved Credit Amount</h3>
-          <div class="text-5xl font-bold text-green-700 my-4">$<%= :erlang.float_to_binary(@credit_amount, decimals: 2) %></div>
+          <div class="text-5xl font-bold text-green-700 my-4">$<%= Helper.format_currency(@credit_amount) %></div>
           <p class="text-gray-700">This amount is based on your monthly disposable income × 12 months.</p>
         </div>
 
         <div class="bg-white/70 rounded-md p-6 mb-6 text-left">
-          <p><strong>Monthly Income:</strong> $<%= :erlang.float_to_binary(@income, decimals: 2) %></p>
-          <p><strong>Monthly Expenses:</strong> $<%= :erlang.float_to_binary(@expenses, decimals: 2) %></p>
-          <p><strong>Disposable Income:</strong> $<%= :erlang.float_to_binary(@income - @expenses, decimals: 2) %></p>
+          <p><strong>Monthly Income:</strong> $<%= Helper.format_currency(@income) %></p>
+          <p><strong>Monthly Expenses:</strong> $<%= Helper.format_currency(@expenses) %></p>
+          <p><strong>Disposable Income:</strong> $<%= Helper.format_currency(@income - @expenses) %></p>
         </div>
 
         <div class="pt-6 border-t border-green-300">
