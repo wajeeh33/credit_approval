@@ -1,0 +1,162 @@
+<div class="max-w-3xl mx-auto p-6 font-sans">
+  <div class="text-center mb-10 pb-6 border-b-2 border-gray-200">
+    <h1 class="text-4xl font-bold text-blue-800 mb-2">Credit Approval System</h1>
+    <p class="text-gray-600 text-lg">Complete the assessment to check your credit eligibility</p>
+  </div>
+
+  <%= if @error_message do %>
+    <div class="bg-red-100 text-red-800 px-4 py-3 rounded-md border border-red-200 mb-6">
+      <%= @error_message %>
+    </div>
+  <% end %>
+
+  <%= case @step do %>
+    <% 1 -> %>
+      <div class="bg-white rounded-xl p-8 shadow-lg">
+        <h2 class="text-2xl font-semibold text-blue-800 mb-4">Step 1: Risk Assessment Questions</h2>
+        <p class="text-gray-600 mb-8">Please answer the following questions to assess your credit risk profile.</p>
+
+        <form phx-submit="submit_answers" class="flex flex-col gap-6">
+          <div>
+            <label class="font-semibold text-gray-800">
+              Do you have a paying job? <span class="text-gray-500 font-normal">(4 points)</span>
+            </label>
+            <select name="answers[has_job]" class="mt-2 p-3 border-2 border-gray-200 rounded-md w-full focus:border-blue-700 focus:outline-none" required>
+              <option value="">Select an answer</option>
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="font-semibold text-gray-800">
+              Have you consistently had a paying job for the past 12 months? <span class="text-gray-500 font-normal">(2 points)</span>
+            </label>
+            <select name="answers[job_12_months]" class="mt-2 p-3 border-2 border-gray-200 rounded-md w-full focus:border-blue-700 focus:outline-none" required>
+              <option value="">Select an answer</option>
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="font-semibold text-gray-800">
+              Do you own a home? <span class="text-gray-500 font-normal">(2 points)</span>
+            </label>
+            <select name="answers[owns_home]" class="mt-2 p-3 border-2 border-gray-200 rounded-md w-full focus:border-blue-700 focus:outline-none" required>
+              <option value="">Select an answer</option>
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="font-semibold text-gray-800">
+              Do you own a car? <span class="text-gray-500 font-normal">(1 point)</span>
+            </label>
+            <select name="answers[owns_car]" class="mt-2 p-3 border-2 border-gray-200 rounded-md w-full focus:border-blue-700 focus:outline-none" required>
+              <option value="">Select an answer</option>
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="font-semibold text-gray-800">
+              Do you have any additional source of income? <span class="text-gray-500 font-normal">(2 points)</span>
+            </label>
+            <select name="answers[additional_income]" class="mt-2 p-3 border-2 border-gray-200 rounded-md w-full focus:border-blue-700 focus:outline-none" required>
+              <option value="">Select an answer</option>
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+            </select>
+          </div>
+
+          <button type="submit" class="bg-blue-700 hover:bg-blue-900 text-white font-semibold py-3 px-6 rounded-md transition">
+            Submit Assessment
+          </button>
+        </form>
+      </div>
+
+    <% 2 -> %>
+      <div class="bg-white rounded-xl p-8 shadow-lg">
+        <h2 class="text-2xl font-semibold text-blue-800 mb-4">Step 2: Financial Information</h2>
+        <p class="text-gray-600 mb-6">
+          Great! You earned <strong><%= @points %>/11 points</strong> and passed the risk assessment.
+          Now please provide your financial information to calculate your credit amount.
+        </p>
+
+        <form phx-submit="submit_income_expenses" class="flex flex-col gap-6">
+          <div>
+            <label class="font-semibold text-gray-800">Total Monthly Income (USD)</label>
+            <input type="number" name="income" placeholder="e.g., 5000" step="0.01" min="0"
+                   class="mt-2 p-3 border-2 border-gray-200 rounded-md w-full focus:border-blue-700 focus:outline-none" required />
+            <small class="text-gray-500 text-sm">Enter your total monthly income from all sources</small>
+          </div>
+
+          <div>
+            <label class="font-semibold text-gray-800">Total Monthly Expenses (USD)</label>
+            <input type="number" name="expenses" placeholder="e.g., 3000" step="0.01" min="0"
+                   class="mt-2 p-3 border-2 border-gray-200 rounded-md w-full focus:border-blue-700 focus:outline-none" required />
+            <small class="text-gray-500 text-sm">Enter your total monthly expenses</small>
+          </div>
+
+          <button type="submit" class="bg-blue-700 hover:bg-blue-900 text-white font-semibold py-3 px-6 rounded-md transition">
+            Calculate Credit Amount
+          </button>
+        </form>
+      </div>
+
+    <% 3 -> %>
+      <div class="bg-red-100 border-2 border-red-300 text-red-800 rounded-xl p-8 shadow-md text-center">
+        <h2 class="text-2xl font-bold mb-4">Application Status: Not Approved</h2>
+        <p class="mb-6">Thank you for your answers. We are currently unable to issue credit to you.</p>
+        <div class="bg-white/70 rounded-md p-4 mb-6">
+          <p><strong>Your Risk Assessment Score:</strong> <%= @points %>/11 points</p>
+          <p><strong>Required Score:</strong> More than 6 points</p>
+        </div>
+        <p class="mb-6">Your application did not meet the minimum requirements. You may reapply in the future when your circumstances change.</p>
+        <button phx-click="restart" class="bg-gray-600 hover:bg-gray-800 text-white font-semibold py-3 px-6 rounded-md transition">Start Over</button>
+      </div>
+
+    <% 4 -> %>
+      <div class="bg-green-100 border-2 border-green-300 text-green-800 rounded-xl p-8 shadow-md text-center">
+        <h2 class="text-2xl font-bold mb-4">🎉 Congratulations! Credit Approved!</h2>
+        <div class="my-6">
+          <h3 class="text-xl font-semibold">Approved Credit Amount</h3>
+          <div class="text-5xl font-bold text-green-700 my-4">$<%= :erlang.float_to_binary(@credit_amount, decimals: 2) %></div>
+          <p class="text-gray-700">This amount is based on your monthly disposable income × 12 months.</p>
+        </div>
+
+        <div class="bg-white/70 rounded-md p-6 mb-6 text-left">
+          <p><strong>Monthly Income:</strong> $<%= :erlang.float_to_binary(@income, decimals: 2) %></p>
+          <p><strong>Monthly Expenses:</strong> $<%= :erlang.float_to_binary(@expenses, decimals: 2) %></p>
+          <p><strong>Disposable Income:</strong> $<%= :erlang.float_to_binary(@income - @expenses, decimals: 2) %></p>
+        </div>
+
+        <div class="pt-6 border-t border-green-300">
+          <h3 class="text-blue-800 text-xl font-semibold mb-4">Get Your Credit Report</h3>
+          <form phx-submit="send_email" class="flex flex-col gap-4">
+            <input type="email" name="email" placeholder="your.email@example.com"
+                   class="p-3 border-2 border-gray-200 rounded-md focus:border-blue-700 focus:outline-none" required />
+            <button type="submit" class="bg-green-600 hover:bg-green-800 text-white font-semibold py-3 px-6 rounded-md transition">Send PDF Report</button>
+          </form>
+        </div>
+      </div>
+
+    <% 5 -> %>
+      <div class="bg-blue-100 border-2 border-blue-300 text-blue-800 rounded-xl p-8 shadow-md text-center">
+        <h2 class="text-2xl font-bold mb-4">✅ PDF Report Sent Successfully!</h2>
+        <p class="mb-4">Your credit approval report has been sent to <strong><%= @email %></strong></p>
+        <p>The email contains:</p>
+        <ul class="list-disc list-inside text-left my-4 space-y-2">
+          <li>Complete credit assessment results</li>
+          <li>Financial summary</li>
+          <li>Approved credit details</li>
+          <li>Professional PDF report attachment</li>
+        </ul>
+        <p class="bg-white/70 rounded-md p-4 mb-6">Please check your email (including spam) for the report.</p>
+        <button phx-click="restart" class="bg-blue-700 hover:bg-blue-900 text-white font-semibold py-3 px-6 rounded-md transition">Start New Application</button>
+      </div>
+  <% end %>
+</div>
